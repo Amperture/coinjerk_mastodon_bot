@@ -21,7 +21,7 @@ def check_notifications(): #{{{
 
     if response.status_code == 200 and response.json():
         latest_notification_id = response.json()[0]['id']
-        config['latest_notification'] = latest_notification_id
+        config['mastodon']['latest_notification'] = latest_notification_id
         save_config(config)
         return response.json()
     elif response.status_code == 200:
