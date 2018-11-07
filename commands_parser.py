@@ -1,48 +1,56 @@
+from html2text import html2text
 
-def sort_mentions(mentions):
+#{{{ Commands
+def do_your_best(mention): #{{{
+    #print("He wants me to do my best!")
+    reply = {
+        'type'     : 'reply',
+        'reply_to' : mention['status']['id'],
+        'text'     : ("@{} I'm going to do my best! " \
+                + "You should too!").format(mention['account']['acct'])
+    }
+    return reply
+#}}}
+def testqr(mention): #{{{
+    #print("He wants to see a QR Code!")
+    reply = {
+        'type'     : 'reply_qr',
+        'reply_to' : mention['status']['id'],
+        'text'     : "@{} Did I make a good QR Code?" \
+                .format(mention['account']['acct']),
+        'qr'     : (
+        "bitcoin:bc1qve9xjmxugte40d9a26vd0us0xc3rekutsseg5k")
+    }
+    return reply
+#}}}
+def marco(mention): #{{{
+    #print("He wants to play Marco Polo!")
+    reply = {
+        'type'     : 'reply',
+        'reply_to' : mention['status']['id'],
+        'text'     : "@{} Polo!" \
+                .format(mention['account']['acct'])
+    }
+    return reply
+#}}}
+command_list = {#{{{
+        'do your best' : do_your_best,
+        'marco' : marco,
+        'testqr' : testqr
+        }#}}}
+#}}}
+
+def sort_mentions(notifications):#{{{
     sendback = []
-    for x in mentions:
-        if x['type'] == 'mention':
-            y = x['status']
-            #pprint.pprint(y)
-            '''
-            print('From: ' + y['account']['acct']) 
-            print('Text: ' + y['content']) 
-            print('Toot ID: ' + y['id']) 
-            '''
+    mentions = (x for x in notifications if x['type'] == 'mention')
 
-            if "do your best" in y['content'].lower():
-                print("He wants me to do my best!")
-                reply = {
-                    'type'     : 'reply',
-                    'reply_to' : y['id'],
-                    'text'     : ("@{} I'm going to do my best! " \
-                            + "You should too!").format(y['account']['acct'])
-                }
-                sendback.append(reply)
-
-            #{{{ Marco
-            if "marco" in y['content'].lower():
-                print("He wants to play Marco Polo!")
-                reply = {
-                    'type'     : 'reply',
-                    'reply_to' : y['id'],
-                    'text'     : "@{} Polo!" \
-                            .format(y['account']['acct'])
-                }
-                sendback.append(reply)
-            #}}} Marco
-            #{{{ Test QR
-            if "testqr" in y['content'].lower():
-                print("He wants to see a QR Code!")
-                reply = {
-                    'type'     : 'reply_qr',
-                    'reply_to' : y['id'],
-                    'text'     : "@{} Did I make a good QR Code?" \
-                            .format(y['account']['acct']),
-                    'qr'     : (
-                    "bitcoin:bc1qve9xjmxugte40d9a26vd0us0xc3rekutsseg5k")
-                }
-                sendback.append(reply)
-            #}}} Test QR
+    for mention in mentions:
+        for key in command_list.keys():
+            print(html2text(mention['status']['content']))
+            print(key.lower())
+            if key in mention['status']['content']:
+                reply = command_list[key](mention)
+                sendback.extend(reply) if type(reply) is list \
+                    else sendback.append(reply)
     return sendback
+#}}}

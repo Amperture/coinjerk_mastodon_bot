@@ -17,6 +17,7 @@ def check_notifications(): #{{{
     data = {}
     data['since_id'] = config['mastodon']['latest_notification']
 
+    print(data)
     response = _mastodon_API_get(API_PATH_GET_NOTIFICATIONS, data)
 
     if response.status_code == 200 and response.json():
@@ -45,6 +46,12 @@ def send_reply(toot_dict): #{{{
     text = toot_dict['text']
     replyTo = toot_dict['reply_to']
     _mastodon_push_message(text, 'public', replyTo = replyTo, files = None)
+#}}}
+
+def send_direct(toot_dict): #{{{
+    text = toot_dict['text']
+    replyTo = toot_dict['reply_to']
+    _mastodon_push_message(text, 'direct', replyTo = replyTo, files = None)
 #}}}
 
 def send_reply_qr_code(toot_dict): # {{{
@@ -131,9 +138,9 @@ def _mastodon_API_get(api_path, data):#{{{
             headers = headers
     )
     if response.status_code == 200:
-        print("Success!!")
+        #print("Success!!")
         return response
     else:
-        print("Fail...")
+        #print("Fail...")
         return False
 #}}}
