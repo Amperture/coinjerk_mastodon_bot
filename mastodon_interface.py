@@ -4,7 +4,7 @@ import pprint
 
 from io import BytesIO
 
-from config_handler import config
+from config_handler import config, save_config
 
 API_PATH_GET_NOTIFICATIONS = '/api/v1/notifications'
 API_PATH_POST_STATUS = '/api/v1/statuses'
@@ -14,23 +14,15 @@ headers = {}
 headers['Authorization'] = 'Bearer ' + config['mastodon']['access_token']
 
 def check_notifications(): #{{{
-    filename = 'latest_mention.txt'
-
-    with open(filename) as f:
-        fdata = f.read()
-
     data = {}
-    data['since_id'] = fdata 
+    data['since_id'] = config['latest_notification']
 
     response = _mastodon_API_get(API_PATH_GET_NOTIFICATIONS, data)
 
     if response.status_code == 200 and response.json():
-        latestNotificationId = response.json()[0]['id']
-        print(latestNotificationId)
-
-        with open(filename, 'w') as f:
-            f.write(latestNotificationId)
-
+        latest_notification_id = response.json()[0]['id']
+        config['latest_notification'] = latest_notification_id
+        save_config(config)
         return response.json()
     elif response.status_code == 200:
         print("No new notifications")
