@@ -5,17 +5,19 @@ def sort_mentions(mentions):
         if x['type'] == 'mention':
             y = x['status']
             #pprint.pprint(y)
+            '''
             print('From: ' + y['account']['acct']) 
             print('Text: ' + y['content']) 
             print('Toot ID: ' + y['id']) 
+            '''
 
             if "do your best" in y['content'].lower():
                 print("He wants me to do my best!")
                 reply = {
                     'type'     : 'reply',
                     'reply_to' : y['id'],
-                    'text'     : "@{} I'm going to do my best!" \
-                            .format(y['account']['acct'])
+                    'text'     : ("@{} I'm going to do my best! " \
+                            + "You should too!").format(y['account']['acct'])
                 }
                 sendback.append(reply)
 
