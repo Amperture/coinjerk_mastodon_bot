@@ -15,7 +15,7 @@ headers['Authorization'] = 'Bearer ' + config['mastodon']['access_token']
 
 def check_notifications(): #{{{
     data = {}
-    data['since_id'] = config['latest_notification']
+    data['since_id'] = config['mastodon']['latest_notification']
 
     response = _mastodon_API_get(API_PATH_GET_NOTIFICATIONS, data)
 
